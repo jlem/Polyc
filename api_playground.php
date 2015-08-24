@@ -1,11 +1,25 @@
 <?php
 
-$policy->setRulesNamespace('Some\Namespace\ForRules');
 $policy->setResolver(...);
+
+
+$policy->set('league.enable',
+    [
+        'MemberHasPermission',
+        'StaffHasJurisdiction',
+        'SectionCanHaveLeague',
+        'SectionDoesNotHaveLeague'
+    ],
+    [
+        'acl' => true,
+        'title' => 'Enable League',
+        'description' => 'Allows member to enable the league for the section'
+    ]
+);
 
 // resolves the rules out of the container you provided and creates a new policy with them.
 
-$policy->make('league.enable', [
+$policy->set('league.enable', [
     'rules' => [
         'MemberHasPermission',
         'StaffHasJurisdiction',
@@ -19,7 +33,7 @@ $policy->make('league.enable', [
     ]
 ])
 
-$policy->make('league.enable', [
+$policy->set('league.enable', [
     'MemberHasPermission',
     'StaffHasJurisdiction',
     'SectionCanHaveLeague',
@@ -27,14 +41,6 @@ $policy->make('league.enable', [
 ], [
     'title' => 'Enable League',
     'description' => 'Allows member to enable to the league for the section'
-]);
-
-// Must construct the policy yourself, attach it at any time
-$policy->add(new Policy('league.enable', [
-    new MemberHasPermission($member),
-    new StaffHasJusrisdiction($member, $section),
-    new SectionCanHaveLeague($section),
-    new SectionDoesNotHaveLeague($section)
 ]);
 
 $policy->delegate('league.enable', 'SomeHandler');

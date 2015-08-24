@@ -10,13 +10,9 @@ abstract class RuleResolverAbstract
      */
     public function resolve(array $rules)
     {
-        $resolved = [];
-
-        foreach ($rules as $rule) {
-            $resolved[] = $this->resolveRule($rule);
-        }
-
-        return $resolved;
+        return array_map(function($rule) {
+            return $this->resolveRule($rule);
+        }, $rules);
     }
 
     abstract protected function resolveRule($rule);

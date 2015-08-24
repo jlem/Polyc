@@ -4,6 +4,9 @@ namespace Jlem\Polyc;
 
 class Policy
 {
+    /**
+     * @var string
+     */
     private $key;
     /**
      * @var array
@@ -12,7 +15,7 @@ class Policy
 
     /**
      * Policy constructor.
-     * @param $key
+     * @param string $key
      * @param array $rules
      */
     public function __construct($key, array $rules)
@@ -26,15 +29,16 @@ class Policy
      */
     public function ask()
     {
-        $results = [];
-
-        foreach ($this->getRules() as $rule) {
-            $results[] = $rule->test($this);
-        }
+        $results = array_map(function($rule) {
+           return $rule->test($this);
+        }, $this->getRules());
 
         return new PolicyResponse($results);
     }
 
+    /**
+     * @return array
+     */
     public function getRules()
     {
         return $this->rules;
