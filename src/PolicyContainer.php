@@ -46,8 +46,10 @@ class PolicyContainer
 
         $rules = $this->ruleResolver->resolve($config['rules']);
 
+        $attributes = $config['attributes'];
+
         if ($this->isCached($key)) {
-            $this->cache[$key] = new Policy($key, $rules);
+            $this->cache[$key] = new Policy($key, $rules, $attributes);
         }
 
         return $this->cache[$key];
