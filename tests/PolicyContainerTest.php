@@ -2,7 +2,6 @@
 
 namespace Jlem\Polyc\Tests;
 
-use Jlem\Polyc\Policy;
 use Jlem\Polyc\PolicyContainer;
 use Jlem\Polyc\Tests\Fixtures\TestContainer;
 use Jlem\Polyc\Tests\Fixtures\TestRuleResolver;
@@ -17,7 +16,7 @@ class PolicyContainerTest extends \PHPUnit_Framework_TestCase
         $resolver = new TestRuleResolver(new TestContainer());
         $this->container = new PolicyContainer($resolver);
         $this->config = require 'Fixtures/example_configuration.php';
-        $this->container->set('foo.bar', $this->config);
+        $this->container->set('foo.bar', $this->config['rules'], $this->config['attributes']);
     }
 
     public function testCreatesNewPolicyConfiguration()
@@ -29,7 +28,7 @@ class PolicyContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testCreatesMultiplePolicyConfigurations()
     {
-        $this->container->set('baz.bar', ['rules' => ['foo']]);
+        $this->container->set('baz.bar', ['foo']);
         $configs = $this->container->getConfig();
         $this->assertInternalType('array', $configs);
         $this->assertCount(2, $configs);
@@ -47,16 +46,8 @@ class PolicyContainerTest extends \PHPUnit_Framework_TestCase
     {
         $policy1 = $this->container->make('foo.bar');
         $policy2 = $this->container->make('foo.bar');
-        $this->assertSame($policy1, $policy2);
-    }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     * @expectedExceptionMessageRegExp /Attempted to configure policy without 'rules' key. Policy key: (.*)/
-     */
-    public function testExceptionIsThrownIfRulesElementIsMissingFromConfig()
-    {
-        $this->container->set('blah.blah', []);
+        $this->assertSame($policy1, $policy2);
     }
 
     /**
@@ -65,22 +56,13 @@ class PolicyContainerTest extends \PHPUnit_Framework_TestCase
      */
     public function testExceptionIsThrownIfRulesElementIsEmpty()
     {
-        $this->container->set('blah.blah', ['rules' => []]);
+        $this->container->set('blah.blah', []);
     }
 
     public function testPolicyConfigurationsCanBeFilteredByArbitraryRule()
     {
-        $this->container->set('bar.foo', [
-            'rules' => [
-                'Jlem\Polyc\Tests\Fixtures\BarRule'
-            ]
-        ]);
-
-        $this->container->set('baz.bar', [
-            'rules' => [
-                'Jlem\Polyc\Tests\Fixtures\BazRule'
-            ]
-        ]);
+        $this->container->set('bar.foo', ['Jlem\Polyc\Tests\Fixtures\BarRule']);
+        $this->container->set('baz.bar', ['Jlem\Polyc\Tests\Fixtures\BazRule']);
 
         $policies = $this->container->filterByRule('Jlem\Polyc\Tests\Fixtures\BazRule');
 
@@ -90,23 +72,8 @@ class PolicyContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testPolicyConfigurationCanBeFilteredByAttributeValue()
     {
-        $this->container->set('bar.foo', [
-            'rules' => [
-                'Jlem\Polyc\Tests\Fixtures\BarRule'
-            ],
-            'attributes' => [
-                'acl' => false
-            ]
-        ]);
-
-        $this->container->set('baz.bar', [
-            'rules' => [
-                'Jlem\Polyc\Tests\Fixtures\BazRule'
-            ],
-            'attributes' => [
-                'acl' => true
-            ]
-        ]);
+        $this->container->set('bar.foo', ['Jlem\Polyc\Tests\Fixtures\BarRule'], ['acl' => true]);
+        $this->container->set('baz.bar', ['Jlem\Polyc\Tests\Fixtures\BarRule'], ['acl' => false]);
 
         $policies = $this->container->filterByAttributeValue('acl', true);
 
@@ -116,23 +83,8 @@ class PolicyContainerTest extends \PHPUnit_Framework_TestCase
 
     public function testPolicyConfigurationCanBeFilteredByAttributeKey()
     {
-        $this->container->set('bar.foo', [
-            'rules' => [
-                'Jlem\Polyc\Tests\Fixtures\BarRule'
-            ],
-            'attributes' => [
-                'foo' => 'bar'
-            ]
-        ]);
-
-        $this->container->set('baz.bar', [
-            'rules' => [
-                'Jlem\Polyc\Tests\Fixtures\BazRule'
-            ],
-            'attributes' => [
-                'foo' => 'baz'
-            ]
-        ]);
+        $this->container->set('bar.foo', ['Jlem\Polyc\Tests\Fixtures\BarRule'], ['foo' => 'bar']);
+        $this->container->set('baz.bar', ['Jlem\Polyc\Tests\Fixtures\BarRule'], ['foo' => 'baz']);
 
         $policies = $this->container->filterByAttributeKey('foo');
 

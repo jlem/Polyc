@@ -21,14 +21,17 @@ class PolicyContainer
      * Attaches a new policy configuration to the registry
      *
      * @param string $key
-     * @param array $policyConfiguration
-     * @return void
+     * @param array $rules
+     * @param array $attributes
      */
-    public function set($key, array $policyConfiguration)
+    public function set($key, array $rules, array $attributes = [])
     {
-        $this->validateConfiguration($key, $policyConfiguration);
+        if (empty($rules)) {
+            throw new \InvalidArgumentException("At least one rule is required to set a policy. Policy key: $key");
+        }
 
-        $this->config[$key] = $policyConfiguration;
+        $this->config[$key]['rules'] = $rules;
+        $this->config[$key]['attributes'] = $attributes;
     }
 
     /**
@@ -73,8 +76,8 @@ class PolicyContainer
      */
     public function filterByRule($rule)
     {
-        return array_filter($this->config, function($config) use ($rule) {
-           return in_array($rule, $config['rules']);
+        return array_filter($this->config, function ($config) use ($rule) {
+            return in_array($rule, $config['rules']);
         });
     }
 
@@ -85,9 +88,9 @@ class PolicyContainer
      */
     public function filterByAttributeValue($attributeKey, $attributeValue)
     {
-        return array_filter($this->config, function($config) use ($attributeKey, $attributeValue) {
+        return array_filter($this->config, function ($config) use ($attributeKey, $attributeValue) {
 
-            if ($this->checkAttributeKey($config, $attributeKey) === false) {
+            if (!array_key_exists($attributeKey, $config['attributes'])) {
                 return false;
             }
 
@@ -101,8 +104,8 @@ class PolicyContainer
      */
     public function filterByAttributeKey($attributeKey)
     {
-        return array_filter($this->config, function($config) use ($attributeKey) {
-            return $this->checkAttributeKey($config, $attributeKey);
+        return array_filter($this->config, function ($config) use ($attributeKey) {
+            return array_key_exists($attributeKey, $config['attributes']);
         });
     }
 
@@ -136,38 +139,5 @@ class PolicyContainer
     private function isCached($key)
     {
         return !array_key_exists($key, $this->cache);
-    }
-
-    /**
-     * @param $key
-     * @param array $policyConfiguration
-     */
-    private function validateConfiguration($key, array $policyConfiguration)
-    {
-        if (!array_key_exists('rules', $policyConfiguration)) {
-            throw new \InvalidArgumentException("Attempted to configure policy without 'rules' key. Policy key: $key");
-        }
-
-        if (empty($policyConfiguration['rules'])) {
-            throw new \InvalidArgumentException("At least one rule is required to set a policy. Policy key: $key");
-        }
-    }
-
-    /**
-     * @param array $config
-     * @param $attributeKey
-     * @return bool
-     */
-    private function checkAttributeKey(array $config, $attributeKey)
-    {
-        if (!array_key_exists('attributes', $config)) {
-            return false;
-        }
-
-        if (!array_key_exists($attributeKey, $config['attributes'])) {
-            return false;
-        }
-
-        return true;
     }
 }
