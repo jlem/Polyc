@@ -18,9 +18,14 @@ class PolicyResponse
         $this->testResults = $testResults;
     }
 
+    /**
+     * Checks whether or not the policy request was approved
+     * @return bool
+     */
     public function approved()
     {
         foreach ($this->testResults as $test) {
+            /** @var TestResults $test */
             if ($test->failed()) {
                 return false;
             }
@@ -29,8 +34,19 @@ class PolicyResponse
         return true;
     }
 
+    /**
+     * Returns the class name of the first failed rule it encounters
+     * @return false|string
+     */
     public function denied()
     {
-        return !$this->approved();
+        foreach ($this->testResults as $test) {
+            /** @var TestResults $test */
+            if ($test->failed()) {
+                return $test->getTestedClassName();
+            }
+        }
+
+        return false;
     }
 }

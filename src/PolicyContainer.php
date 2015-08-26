@@ -4,22 +4,27 @@ namespace Jlem\Polyc;
 
 class PolicyContainer
 {
-    protected $config = [];
-    protected $cache = [];
-
+    /**
+     * @var PolicyConfiguration
+     */
+    private $configuration;
+    /**
+     * @var array
+     */
+    private $cache = [];
     /**
      * @var RuleResolver
      */
     private $ruleResolver;
 
-    public function __construct(RuleResolver $ruleResolver)
+    public function __construct(PolicyConfiguration $configuration, RuleResolver $ruleResolver)
     {
         $this->ruleResolver = $ruleResolver;
+        $this->configuration = $configuration->get();
     }
 
     /**
      * Attaches a new policy configuration to the registry
-     *
      * @param string $key
      * @param array $rules
      * @param array $attributes
@@ -30,13 +35,12 @@ class PolicyContainer
             throw new \InvalidArgumentException("At least one rule is required to set a policy. Policy key: $key");
         }
 
-        $this->config[$key]['rules'] = $rules;
-        $this->config[$key]['attributes'] = $attributes;
+        $this->configuration[$key]['rules'] = $rules;
+        $this->configuration[$key]['attributes'] = $attributes;
     }
 
     /**
      * Creates a new policy from the configuration registry
-     *
      * @param string $key
      * @return Policy
      */
@@ -46,10 +50,8 @@ class PolicyContainer
 
         $rules = $this->ruleResolver->resolve($config['rules']);
 
-        $attributes = $config['attributes'];
-
         if ($this->isCached($key)) {
-            $this->cache[$key] = new Policy($key, $rules, $attributes);
+            $this->cache[$key] = new Policy($key, $rules);
         }
 
         return $this->cache[$key];
@@ -58,15 +60,14 @@ class PolicyContainer
     /**
      * Gets all of the policy configuration data from the given key
      * If no key is given, all of the policy configurations are returned
-     *
      * @param null|string $key
      * @return array
      * @throws PolicyNotFoundException
      */
-    public function getConfig($key = null)
+    public function getConfiguration($key = null)
     {
         if (is_null($key)) {
-            return $this->config;
+            return $this->configuration;
         }
 
         return $this->getSingleConfig($key);
@@ -78,7 +79,7 @@ class PolicyContainer
      */
     public function filterByRule($rule)
     {
-        return array_filter($this->config, function ($config) use ($rule) {
+        return array_filter($this->configuration, function ($config) use ($rule) {
             return in_array($rule, $config['rules']);
         });
     }
@@ -90,8 +91,7 @@ class PolicyContainer
      */
     public function filterByAttributeValue($attributeKey, $attributeValue)
     {
-        return array_filter($this->config, function ($config) use ($attributeKey, $attributeValue) {
-
+        return array_filter($this->configuration, function ($config) use ($attributeKey, $attributeValue) {
             if (!array_key_exists($attributeKey, $config['attributes'])) {
                 return false;
             }
@@ -106,7 +106,7 @@ class PolicyContainer
      */
     public function filterByAttributeKey($attributeKey)
     {
-        return array_filter($this->config, function ($config) use ($attributeKey) {
+        return array_filter($this->configuration, function ($config) use ($attributeKey) {
             return array_key_exists($attributeKey, $config['attributes']);
         });
     }
@@ -119,7 +119,7 @@ class PolicyContainer
     private function getSingleConfig($key)
     {
         if ($this->configExists($key)) {
-            return $this->config[$key];
+            return $this->configuration[$key];
         }
 
         throw new PolicyNotFoundException("The policy: $key, has not been configured");
@@ -131,7 +131,7 @@ class PolicyContainer
      */
     private function configExists($key)
     {
-        return array_key_exists($key, $this->config);
+        return array_key_exists($key, $this->configuration);
     }
 
     /**

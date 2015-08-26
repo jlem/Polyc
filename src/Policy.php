@@ -12,22 +12,16 @@ class Policy
      * @var array
      */
     private $rules;
-    /**
-     * @var array
-     */
-    private $attributes;
 
     /**
      * Policy constructor.
      * @param string $key
      * @param array $rules
-     * @param array $attributes
      */
-    public function __construct($key, array $rules, array $attributes = [])
+    public function __construct($key, array $rules)
     {
         $this->key = $key;
         $this->rules = $rules;
-        $this->attributes = $attributes;
     }
 
     /**
@@ -36,7 +30,8 @@ class Policy
     public function ask()
     {
         $results = array_map(function($rule) {
-           return $rule->test($this);
+            /** @var Testable $rule */
+            return $rule->test($this);
         }, $this->getRules());
 
         return new PolicyResponse($results);
@@ -56,13 +51,5 @@ class Policy
     public function getRules()
     {
         return $this->rules;
-    }
-
-    /**
-     * @return array
-     */
-    public function getAttributes()
-    {
-        return $this->attributes;
     }
 }
