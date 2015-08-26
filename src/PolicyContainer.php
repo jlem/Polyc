@@ -2,6 +2,8 @@
 
 namespace Jlem\Polyc;
 
+use Jlem\Polyc\Rule\RuleResolver;
+
 class PolicyContainer
 {
     /**
@@ -71,44 +73,6 @@ class PolicyContainer
         }
 
         return $this->getSingleConfig($key);
-    }
-
-    /**
-     * @param string $rule
-     * @return array
-     */
-    public function filterByRule($rule)
-    {
-        return array_filter($this->configuration, function ($config) use ($rule) {
-            return in_array($rule, $config['rules']);
-        });
-    }
-
-    /**
-     * @param string $attributeKey
-     * @param mixed $attributeValue
-     * @return array
-     */
-    public function filterByAttributeValue($attributeKey, $attributeValue)
-    {
-        return array_filter($this->configuration, function ($config) use ($attributeKey, $attributeValue) {
-            if (!array_key_exists($attributeKey, $config['attributes'])) {
-                return false;
-            }
-
-            return $config['attributes'][$attributeKey] === $attributeValue;
-        });
-    }
-
-    /**
-     * @param string $attributeKey
-     * @return array
-     */
-    public function filterByAttributeKey($attributeKey)
-    {
-        return array_filter($this->configuration, function ($config) use ($attributeKey) {
-            return array_key_exists($attributeKey, $config['attributes']);
-        });
     }
 
     /**

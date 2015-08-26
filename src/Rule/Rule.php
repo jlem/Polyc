@@ -1,6 +1,9 @@
 <?php
 
-namespace Jlem\Polyc;
+namespace Jlem\Polyc\Rule;
+
+use Jlem\Polyc\Policy;
+use Jlem\Polyc\Rule\TestResults;
 
 trait Rule
 {

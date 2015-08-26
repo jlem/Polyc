@@ -1,6 +1,6 @@
 <?php
 
-namespace Jlem\Polyc;
+namespace Jlem\Polyc\Rule;
 
 abstract class RuleResolverAbstract
 {
@@ -15,5 +15,5 @@ abstract class RuleResolverAbstract
         }, $rules);
     }
 
-    abstract protected function resolveRule($rule);
+    abstract protected function resolveRule($key);
 }

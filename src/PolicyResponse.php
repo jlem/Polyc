@@ -2,6 +2,8 @@
 
 namespace Jlem\Polyc;
 
+use Jlem\Polyc\Rule\TestResults;
+
 class PolicyResponse
 {
     /**

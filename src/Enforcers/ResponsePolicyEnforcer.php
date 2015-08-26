@@ -1,8 +1,11 @@
 <?php
 
-namespace Jlem\Polyc;
+namespace Jlem\Polyc\Enforcers;
 
-class ResponsePolicyEnforcer
+use Jlem\Polyc\Policy;
+use Jlem\Polyc\ResponseFactory;
+
+class ResponsePolicyEnforcer implements PolicyEnforcer
 {
     private $responseFactory;
 
@@ -15,6 +18,11 @@ class ResponsePolicyEnforcer
         $this->responseFactory = $responseFactory;
     }
 
+    /**
+     * Checks if policy request was denied, and returns pre-configured response
+     * @param Policy $policy
+     * @return mixed|null
+     */
     public function check(Policy $policy)
     {
         $key = $policy->getKey();

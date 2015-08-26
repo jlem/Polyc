@@ -2,7 +2,7 @@
 
 namespace Jlem\Polyc\Tests;
 
-use Jlem\Polyc\BooleanPolicyEnforcer;
+use Jlem\Polyc\Enforcers\BooleanPolicyEnforcer;
 use Jlem\Polyc\Policy;
 
 class BooleanPolicyEnforcerTest extends \PHPUnit_Framework_TestCase

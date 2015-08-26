@@ -3,8 +3,8 @@
 namespace Jlem\Polyc\Tests\Fixtures;
 
 use Jlem\Polyc\Policy;
-use Jlem\Polyc\Rule;
-use Jlem\Polyc\Testable;
+use Jlem\Polyc\Rule\Rule;
+use Jlem\Polyc\Rule\Testable;
 
 class BarRule implements Testable
 {

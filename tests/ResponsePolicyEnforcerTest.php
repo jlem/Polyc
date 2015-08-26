@@ -3,7 +3,7 @@
 namespace Jlem\Polyc\Tests;
 
 use Jlem\Polyc\Policy;
-use Jlem\Polyc\ResponsePolicyEnforcer;
+use Jlem\Polyc\Enforcers\ResponsePolicyEnforcer;
 
 class ResponsePolicyEnforcerTest extends \PHPUnit_Framework_TestCase
 {

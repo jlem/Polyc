@@ -1,6 +1,8 @@
 <?php
 
-namespace Jlem\Polyc;
+namespace Jlem\Polyc\Rule;
+
+use Jlem\Polyc\Policy;
 
 interface Testable
 {

@@ -34,28 +34,4 @@ class PolicyContainerTest extends \PHPUnit_Framework_TestCase
 
         $this->assertSame($policy1, $policy2);
     }
-
-    public function testPolicyConfigurationsCanBeFilteredByArbitraryRule()
-    {
-        $policies = $this->policyContainer->filterByRule('Jlem\Polyc\Tests\Fixtures\FooRule');
-
-        $this->assertInternalType('array', $policies);
-        $this->assertCount(1, $policies);
-    }
-
-    public function testPolicyConfigurationCanBeFilteredByAttributeValue()
-    {
-        $policies = $this->policyContainer->filterByAttributeValue('acl', true);
-
-        $this->assertInternalType('array', $policies);
-        $this->assertCount(1, $policies);
-    }
-
-    public function testPolicyConfigurationCanBeFilteredByAttributeKey()
-    {
-        $policies = $this->policyContainer->filterByAttributeKey('title');
-
-        $this->assertInternalType('array', $policies);
-        $this->assertCount(2, $policies);
-    }
 }

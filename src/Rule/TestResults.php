@@ -1,6 +1,6 @@
 <?php
 
-namespace Jlem\Polyc;
+namespace Jlem\Polyc\Rule;
 
 class TestResults
 {

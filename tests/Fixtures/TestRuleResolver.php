@@ -2,8 +2,8 @@
 
 namespace Jlem\Polyc\Tests\Fixtures;
 
-use Jlem\Polyc\RuleResolver;
-use Jlem\Polyc\RuleResolverAbstract;
+use Jlem\Polyc\Rule\RuleResolver;
+use Jlem\Polyc\Rule\RuleResolverAbstract;
 
 class TestRuleResolver extends RuleResolverAbstract implements RuleResolver
 {
@@ -21,8 +21,12 @@ class TestRuleResolver extends RuleResolverAbstract implements RuleResolver
         $this->container = $container;
     }
 
-    protected function resolveRule($class)
+    /**
+     * @param $key
+     * @return mixed
+     */
+    protected function resolveRule($key)
     {
-        return $this->container->make($class);
+        return $this->container->make($key);
     }
 }
