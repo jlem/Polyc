@@ -112,3 +112,8 @@ class PimpleRuleResolver extends RuleResolverAbstract implements RuleResolver
     }
 }
 ```
+
+
+## Enforcers
+
+Enforcers are what actually end up 

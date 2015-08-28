@@ -7,8 +7,8 @@ use Jlem\Polyc\Policy;
 interface PolicyEnforcer
 {
     /**
-     * @param Policy $policy
+     * @param string $key
      * @return mixed
      */
-    public function check(Policy $policy);
+    public function check($key);
 }

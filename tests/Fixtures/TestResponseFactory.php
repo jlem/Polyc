@@ -9,7 +9,7 @@ class TestResponseFactory implements ResponseFactory
     public function make($policyKey, $failingRuleClassName)
     {
         switch($policyKey) {
-            case 'foo.bar':
+            case 'bar.baz':
                 switch($failingRuleClassName) {
                     case 'Jlem\Polyc\Tests\Fixtures\FailingFooRule':
                         return "The Failing Foo Rule Failed!";

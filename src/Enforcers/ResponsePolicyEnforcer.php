@@ -3,29 +3,40 @@
 namespace Jlem\Polyc\Enforcers;
 
 use Jlem\Polyc\Policy;
+use Jlem\Polyc\PolicyContainer;
 use Jlem\Polyc\ResponseFactory;
 
 class ResponsePolicyEnforcer implements PolicyEnforcer
 {
+    /**
+     * @var PolicyContainer
+     */
+    private $container;
+
+    /**
+     * @var ResponseFactory
+     */
     private $responseFactory;
 
     /**
      * ResponsePolicyEnforcer constructor.
-     * @param $responseFactory
+     * @param PolicyContainer $container
+     * @param ResponseFactory $responseFactory
      */
-    public function __construct(ResponseFactory $responseFactory)
+    public function __construct(PolicyContainer $container, ResponseFactory $responseFactory)
     {
+        $this->container = $container;
         $this->responseFactory = $responseFactory;
     }
 
     /**
      * Checks if policy request was denied, and returns pre-configured response
-     * @param Policy $policy
+     * @param string $key
      * @return mixed|null
      */
-    public function check(Policy $policy)
+    public function check($key)
     {
-        $key = $policy->getKey();
+        $policy = $this->container->make($key);
         $policyResponse = $policy->ask();
         $failingRule = $policyResponse->denied();
 

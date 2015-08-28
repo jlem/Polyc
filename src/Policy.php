@@ -16,6 +16,11 @@ class Policy
     private $rules;
 
     /**
+     * @var PolicyResponse
+     */
+    private $response;
+
+    /**
      * Policy constructor.
      * @param string $key
      * @param array $rules
@@ -31,12 +36,11 @@ class Policy
      */
     public function ask()
     {
-        $results = array_map(function($rule) {
-            /** @var Testable $rule */
-            return $rule->test($this);
-        }, $this->getRules());
+        if ($this->responseIsCached()) {
+            return $this->response;
+        }
 
-        return new PolicyResponse($results);
+        return $this->makeNewResponse();
     }
 
     /**
@@ -53,5 +57,35 @@ class Policy
     public function getRules()
     {
         return $this->rules;
+    }
+
+    /**
+     * @return bool
+     */
+    private function responseIsCached()
+    {
+        return !is_null($this->response);
+    }
+
+    /**
+     * @param $results
+     * @return PolicyResponse
+     */
+    private function makeNewResponse($results)
+    {
+        return $this->response = new PolicyResponse($this->testRules());
+    }
+
+    /**
+     * @return array
+     */
+    private function testRules()
+    {
+        $results = array_map(function ($rule) {
+            /** @var Testable $rule */
+            return $rule->test($this);
+        }, $this->getRules());
+
+        return $results;
     }
 }

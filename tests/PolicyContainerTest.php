@@ -2,21 +2,13 @@
 
 namespace Jlem\Polyc\Tests;
 
-use Jlem\Polyc\PolicyConfiguration;
-use Jlem\Polyc\PolicyContainer;
-use Jlem\Polyc\Tests\Fixtures\TestContainer;
-use Jlem\Polyc\Tests\Fixtures\TestRuleResolver;
-
 class PolicyContainerTest extends \PHPUnit_Framework_TestCase
 {
     protected $policyContainer;
 
     public function setUp()
     {
-        $configuration = new PolicyConfiguration(require 'Fixtures/full_configuration.php');
-        $resolver = new TestRuleResolver(new TestContainer());
-
-        $this->policyContainer = new PolicyContainer($configuration, $resolver);
+        $this->policyContainer = require 'Fixtures/simple_container.php';
     }
 
     /**
