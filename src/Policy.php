@@ -68,10 +68,9 @@ class Policy
     }
 
     /**
-     * @param $results
      * @return PolicyResponse
      */
-    private function makeNewResponse($results)
+    private function makeNewResponse()
     {
         return $this->response = new PolicyResponse($this->testRules());
     }

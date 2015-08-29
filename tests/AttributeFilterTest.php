@@ -15,7 +15,7 @@ class AttributeFilterTest extends \PHPUnit_Framework_TestCase
         $this->filter = new AttributeFilter($configuration->get());
     }
 
-    public function testPolicyConfigurationCanBeFilteredByAttributeValue()
+    public function testCanBeFilteredByAttributeValue()
     {
         $policies = $this->filter->value('acl', true);
 
@@ -23,7 +23,7 @@ class AttributeFilterTest extends \PHPUnit_Framework_TestCase
         $this->assertCount(1, $policies);
     }
 
-    public function testPolicyConfigurationCanBeFilteredByAttributeKey()
+    public function testCanBeFilteredByAttributeKey()
     {
         $policies = $this->filter->key('title');
 

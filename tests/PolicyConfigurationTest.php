@@ -41,7 +41,7 @@ class PolicyConfigurationTest extends \PHPUnit_Framework_TestCase
         new PolicyConfiguration($config);
     }
 
-    public function testPoliciesAreProperlyConfigured()
+    public function testInitializesAttributesForEachPolicyIfNotDefinedInInitialConfiguration()
     {
         $definedConfiguration = require 'Fixtures/full_configuration.php';
         $expectedConfiguration = require 'Fixtures/expected_configuration.php';

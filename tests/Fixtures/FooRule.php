@@ -12,6 +12,10 @@ class FooRule implements Testable
 
     protected function evaluate(Policy $policy)
     {
-        return true;
+        return $this->can($policy->getKey());
+    }
+
+    private function can($permission) {
+        return strlen($permission) > 0;
     }
 }
