@@ -23,6 +23,10 @@ trait Rule
     {
         $evaluation = $this->evaluate($policy);
 
+        if (!is_bool($evaluation)) {
+            throw new \InvalidArgumentException("Rule ".get_class($this)." did not return a boolean response. Check that it returns true or false");
+        }
+
         return new TestResults(get_class($this), $evaluation);
     }
 }

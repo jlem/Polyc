@@ -6,6 +6,7 @@ use Jlem\Polyc\Policy;
 use Jlem\Polyc\Tests\Fixtures\BarRule;
 use Jlem\Polyc\Tests\Fixtures\BazRule;
 use Jlem\Polyc\Tests\Fixtures\FooRule;
+use Jlem\Polyc\Tests\Fixtures\NonBooleanFooRule;
 
 class PolicyTest extends \PHPUnit_Framework_TestCase
 {
@@ -21,5 +22,17 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
         $response2 = $policy->ask();
 
         $this->assertSame($response1, $response2);
+    }
+
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testExceptionShouldBeThrownIfARuleDoesNotEvaluateABoolean()
+    {
+        $policy = new Policy('foo.bar', [
+            new NonBooleanFooRule,
+        ]);
+
+        $policy->ask();
     }
 }
