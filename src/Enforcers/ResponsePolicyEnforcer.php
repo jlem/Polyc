@@ -37,7 +37,7 @@ class ResponsePolicyEnforcer implements PolicyEnforcer
     public function check($key)
     {
         $policy = $this->container->make($key);
-        $policyResponse = $policy->ask();
+        $policyResponse = $policy->getResponse();
         $failingRule = $policyResponse->denied();
 
         if ($failingRule === false) {

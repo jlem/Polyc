@@ -9,16 +9,21 @@ class Policy
     /**
      * @var string
      */
-    private $key;
+    protected $key;
     /**
      * @var array
      */
-    private $rules;
+    protected $rules;
 
     /**
      * @var PolicyResponse
      */
     private $response;
+
+    /**
+     * @var array
+     */
+    private $args;
 
     /**
      * Policy constructor.
@@ -32,10 +37,22 @@ class Policy
     }
 
     /**
+     * @param $args
+     * @return bool
+     */
+    public function evaluate(...$args)
+    {
+        return $this->getResponse($args)->approved();
+    }
+
+    /**
+     * @param $args
      * @return PolicyResponse
      */
-    public function ask()
+    public function getResponse(array $args = [])
     {
+        $this->args = $args;
+
         if ($this->responseIsCached()) {
             return $this->response;
         }
@@ -82,7 +99,7 @@ class Policy
     {
         $results = array_map(function ($rule) {
             /** @var Testable $rule */
-            return $rule->test($this);
+            return $rule->test($this->args);
         }, $this->getRules());
 
         return $results;

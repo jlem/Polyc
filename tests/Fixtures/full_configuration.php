@@ -27,5 +27,10 @@ return [
             'Jlem\Polyc\Tests\Fixtures\BarRule',
             'Jlem\Polyc\Tests\Fixtures\BazRule'
         ]
+    ],
+    'args.bar' => [
+        'rules' => [
+            'Jlem\Polyc\Tests\Fixtures\RuleWithArgument'
+        ]
     ]
 ];

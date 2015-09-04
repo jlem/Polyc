@@ -7,9 +7,21 @@ use Jlem\Polyc\Tests\Fixtures\BarRule;
 use Jlem\Polyc\Tests\Fixtures\BazRule;
 use Jlem\Polyc\Tests\Fixtures\FooRule;
 use Jlem\Polyc\Tests\Fixtures\NonBooleanFooRule;
+use Jlem\Polyc\Tests\Fixtures\RuleWithArgument;
 
 class PolicyTest extends \PHPUnit_Framework_TestCase
 {
+    public function testPolicyEvaluatesRules()
+    {
+        $policy = new Policy('foo.bar', [
+            new FooRule,
+            new BazRule,
+            new BarRule
+        ]);
+
+        $this->assertTrue($policy->evaluate('some', 'thing'));
+    }
+
     public function testPolicyResponseIsASingleton()
     {
         $policy = new Policy('foo.bar', [
@@ -18,8 +30,8 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
             new BarRule
         ]);
 
-        $response1 = $policy->ask();
-        $response2 = $policy->ask();
+        $response1 = $policy->getResponse();
+        $response2 = $policy->getResponse();
 
         $this->assertSame($response1, $response2);
     }
@@ -33,6 +45,17 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
             new NonBooleanFooRule,
         ]);
 
-        $policy->ask();
+        $policy->getResponse();
+    }
+
+    public function testPolicyCanAcceptArrayOfArguments()
+    {
+        $policy = new Policy('foo.bar', [
+            new RuleWithArgument
+        ]);
+
+        $response = $policy->getResponse(['Foo', 'Bar', 'Baz']);
+
+        $this->assertTrue($response->approved());
     }
 }

@@ -28,5 +28,11 @@ return [
             'Jlem\Polyc\Tests\Fixtures\BazRule'
         ],
         'attributes' => []
+    ],
+    'args.bar' => [
+        'rules' => [
+            'Jlem\Polyc\Tests\Fixtures\RuleWithArgument'
+        ],
+        'attributes' => []
     ]
 ];

@@ -29,7 +29,7 @@ class BooleanPolicyEnforcer implements PolicyEnforcer
     public function check($key)
     {
         $policy = $this->container->make($key);
-        $policyResponse = $policy->ask();
+        $policyResponse = $policy->getResponse();
 
         return $policyResponse->approved();
     }
