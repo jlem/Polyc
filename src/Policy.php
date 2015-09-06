@@ -2,106 +2,50 @@
 
 namespace Jlem\Polyc;
 
-use Jlem\Polyc\Rule\Testable;
-
 class Policy
 {
-    /**
-     * @var string
-     */
-    protected $key;
-    /**
-     * @var array
-     */
-    protected $rules;
+    private $key;
+    private $error;
+    private $result;
 
-    /**
-     * @var PolicyResponse
-     */
-    private $response;
+    protected function error($error)
+    {
+        $this->error = $error;
+        return $this->result = false;
+    }
 
-    /**
-     * @var array
-     */
-    private $args;
+    protected function success()
+    {
+        return $this->result = true;
+    }
 
-    /**
-     * Policy constructor.
-     * @param string $key
-     * @param array $rules
-     */
-    public function __construct($key, array $rules)
+    public function setKey($key)
     {
         $this->key = $key;
-        $this->rules = $rules;
     }
 
-    /**
-     * @param $args
-     * @return bool
-     */
-    public function evaluate(...$args)
-    {
-        return $this->getResponse($args)->approved();
-    }
-
-    /**
-     * @param $args
-     * @return PolicyResponse
-     */
-    public function getResponse(array $args = [])
-    {
-        $this->args = $args;
-
-        if ($this->responseIsCached()) {
-            return $this->response;
-        }
-
-        return $this->makeNewResponse();
-    }
-
-    /**
-     * @return string
-     */
     public function getKey()
     {
         return $this->key;
     }
 
-    /**
-     * @return array
-     */
-    public function getRules()
+    public function hasResult()
     {
-        return $this->rules;
+        return is_bool($this->getResult());
     }
 
-    /**
-     * @return bool
-     */
-    private function responseIsCached()
+    public function getResult()
     {
-        return !is_null($this->response);
+        return $this->result;
     }
 
-    /**
-     * @return PolicyResponse
-     */
-    private function makeNewResponse()
+    public function hasError()
     {
-        return $this->response = new PolicyResponse($this->testRules());
+        return !is_null($this->getError());
     }
 
-    /**
-     * @return array
-     */
-    private function testRules()
+    public function getError()
     {
-        $results = array_map(function ($rule) {
-            /** @var Testable $rule */
-            return $rule->test($this->args);
-        }, $this->getRules());
-
-        return $results;
+        return $this->error;
     }
 }

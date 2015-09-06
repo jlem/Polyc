@@ -3,53 +3,58 @@
 namespace Jlem\Polyc\Tests;
 
 use Jlem\Polyc\PolicyConfiguration;
-
+use Jlem\Polyc\Tests\Fixtures\DeletePostPolicy;
 
 class PolicyConfigurationTest extends \PHPUnit_Framework_TestCase
 {
     /**
      * @expectedException \InvalidArgumentException
      */
-    public function testThrowsExceptionIfConfigurationIsEmpty()
+    public function testThrowsExceptionIfConfigIsEmpty()
     {
         new PolicyConfiguration([]);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testThrowsExceptionIfPolicyHasMissingRules()
+    public function testSimpleKeyValueConfigurationGetsNormalized()
     {
-        $config = [
-            'foo' => ['whatever']
-        ];
+        $config = new PolicyConfiguration(['post.delete' => DeletePostPolicy::class]);
+        $actual = $config->get();
 
-        new PolicyConfiguration($config);
-    }
-
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testThrowsExceptionIfPolicyHasEmptyRules()
-    {
-        $config = [
-            'foo' => [
-                'rules' => []
+        $expected = [
+            'post.delete' => [
+                'handler' => DeletePostPolicy::class,
             ]
         ];
 
-        new PolicyConfiguration($config);
+        $this->assertSame($actual, $expected);
     }
 
-    public function testInitializesAttributesForEachPolicyIfNotDefinedInInitialConfiguration()
+    public function testDetailedConfiguration()
     {
-        $definedConfiguration = require 'Fixtures/full_configuration.php';
-        $expectedConfiguration = require 'Fixtures/expected_configuration.php';
+        $configuration = [
+            'post.delete' => [
+                'handler' => DeletePostPolicy::class,
+                'some' => 'attribute'
+            ]
+        ];
 
-        $configuration = new PolicyConfiguration($definedConfiguration);
+        $config = new PolicyConfiguration($configuration);
+        $config = $config->get();
 
-        $actualConfiguration = $configuration->get();
+        $this->assertSame($config, $configuration);
+    }
 
-        $this->assertSame($expectedConfiguration, $actualConfiguration);
+    /**
+     * @expectedException \InvalidArgumentException
+     */
+    public function testDetailedConfigurationRequiresHandlerAttribute()
+    {
+        $configuration = [
+            'post.delete' => [
+                'some' => 'attribute'
+            ]
+        ];
+
+        new PolicyConfiguration($configuration);
     }
 }

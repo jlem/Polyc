@@ -2,60 +2,39 @@
 
 namespace Jlem\Polyc\Tests;
 
-use Jlem\Polyc\Policy;
-use Jlem\Polyc\Tests\Fixtures\BarRule;
-use Jlem\Polyc\Tests\Fixtures\BazRule;
-use Jlem\Polyc\Tests\Fixtures\FooRule;
-use Jlem\Polyc\Tests\Fixtures\NonBooleanFooRule;
-use Jlem\Polyc\Tests\Fixtures\RuleWithArgument;
+use Jlem\Polyc\Tests\Fixtures\DeletePostPolicy;
 
 class PolicyTest extends \PHPUnit_Framework_TestCase
 {
-    public function testPolicyEvaluatesRules()
+    public function testCheckingValidPolicyReturnsTrue()
     {
-        $policy = new Policy('foo.bar', [
-            new FooRule,
-            new BazRule,
-            new BarRule
-        ]);
+        $policy = new DeletePostPolicy();
+        $result = $policy->check('its a post!');
 
-        $this->assertTrue($policy->evaluate('some', 'thing'));
+        $this->assertTrue($result);
     }
 
-    public function testPolicyResponseIsASingleton()
+    public function testCheckingInvalidPolicyReturnsFalse()
     {
-        $policy = new Policy('foo.bar', [
-            new FooRule,
-            new BazRule,
-            new BarRule
-        ]);
+        $policy = new DeletePostPolicy();
+        $result = $policy->check(null);
 
-        $response1 = $policy->getResponse();
-        $response2 = $policy->getResponse();
-
-        $this->assertSame($response1, $response2);
+        $this->assertFalse($result);
     }
 
-    /**
-     * @expectedException \InvalidArgumentException
-     */
-    public function testExceptionShouldBeThrownIfARuleDoesNotEvaluateABoolean()
+    public function testPolicyCachesResultAfterChecking()
     {
-        $policy = new Policy('foo.bar', [
-            new NonBooleanFooRule,
-        ]);
+        $policy = new DeletePostPolicy();
+        $policy->check('its a post!');
 
-        $policy->getResponse();
+        $this->assertTrue($policy->getResult());
     }
 
-    public function testPolicyCanAcceptArrayOfArguments()
+    public function testPolicyCachesErrorAfterChecking()
     {
-        $policy = new Policy('foo.bar', [
-            new RuleWithArgument
-        ]);
+        $policy = new DeletePostPolicy();
+        $policy->check(null);
 
-        $response = $policy->getResponse(['Foo', 'Bar', 'Baz']);
-
-        $this->assertTrue($response->approved());
+        $this->assertSame($policy->getError(), $policy::INVALID_POST);
     }
 }

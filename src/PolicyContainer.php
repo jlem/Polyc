@@ -2,7 +2,7 @@
 
 namespace Jlem\Polyc;
 
-use Jlem\Polyc\Rule\RuleResolver;
+use InvalidArgumentException;
 
 class PolicyContainer
 {
@@ -15,30 +15,14 @@ class PolicyContainer
      */
     private $cache = [];
     /**
-     * @var RuleResolver
+     * @var PolicyResolver
      */
-    private $ruleResolver;
+    private $policyResolver;
 
-    public function __construct(PolicyConfiguration $configuration, RuleResolver $ruleResolver)
+    public function __construct(PolicyConfiguration $configuration, PolicyResolver $policyResolver)
     {
-        $this->ruleResolver = $ruleResolver;
+        $this->policyResolver = $policyResolver;
         $this->configuration = $configuration->get();
-    }
-
-    /**
-     * Attaches a new policy configuration to the registry
-     * @param string $key
-     * @param array $rules
-     * @param array $attributes
-     */
-    public function set($key, array $rules, array $attributes = [])
-    {
-        if (empty($rules)) {
-            throw new \InvalidArgumentException("At least one rule is required to set a policy. Policy key: $key");
-        }
-
-        $this->configuration[$key]['rules'] = $rules;
-        $this->configuration[$key]['attributes'] = $attributes;
     }
 
     /**
@@ -50,10 +34,11 @@ class PolicyContainer
     {
         $config = $this->getSingleConfig($key);
 
-        $rules = $this->ruleResolver->resolve($config['rules']);
-
-        if ($this->isCached($key)) {
-            $this->cache[$key] = new Policy($key, $rules);
+        if (!$this->isCached($key)) {
+            /** @var Policy $policy */
+            $policy = $this->policyResolver->resolve($config['handler']);
+            $policy->setKey($key);
+            $this->cache[$key] = $policy;
         }
 
         return $this->cache[$key];
@@ -82,11 +67,11 @@ class PolicyContainer
      */
     private function getSingleConfig($key)
     {
-        if ($this->configExists($key)) {
-            return $this->configuration[$key];
+        if (!$this->configExists($key)) {
+            throw new InvalidArgumentException("The policy: $key, has not been configured");
         }
 
-        throw new PolicyNotFoundException("The policy: $key, has not been configured");
+        return $this->configuration[$key];
     }
 
     /**
@@ -104,6 +89,6 @@ class PolicyContainer
      */
     private function isCached($key)
     {
-        return !array_key_exists($key, $this->cache);
+        return array_key_exists($key, $this->cache);
     }
 }

@@ -54,27 +54,28 @@ class PolicyConfiguration
      */
     private function setPolicy($policyKey, $policyDefinition)
     {
-        $this->validateRules($policyDefinition, $policyKey);
-
-        if (!array_key_exists('attributes', $policyDefinition)) {
-            $policyDefinition['attributes'] = [];
-        }
-
+        $policyDefinition = $this->convertSimplePolicyToArrayWithHandler($policyDefinition);
+        $this->validatePolicy($policyKey, $policyDefinition);
         $this->config[$policyKey] = $policyDefinition;
     }
 
     /**
-     * @param $policyDefinition
      * @param $policyKey
+     * @param $policyDefinition
      */
-    private function validateRules($policyDefinition, $policyKey)
+    private function validatePolicy($policyKey, $policyDefinition)
     {
-        if (
-            !isset($policyDefinition['rules'])
-            || !array_key_exists('rules', $policyDefinition)
-            || empty($policyDefinition['rules'])
-        ) {
-            throw new InvalidArgumentException("Policy $policyKey does not have any configured rules");
+        if (is_array($policyDefinition) && !array_key_exists('handler', $policyDefinition)) {
+            throw new InvalidArgumentException("The configuration for $policyKey is missing a handler");
         }
+    }
+
+    /**
+     * @param $policyDefinition
+     * @return array
+     */
+    private function convertSimplePolicyToArrayWithHandler($policyDefinition)
+    {
+        return !is_array($policyDefinition) ? ['handler' => $policyDefinition] : $policyDefinition;
     }
 }
