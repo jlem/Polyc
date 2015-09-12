@@ -40,6 +40,26 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals('this is a failure response', $response);
     }
 
+    public function testPolicyClearsResponderForSubsequentChecksIfPolicyFails()
+    {
+        $policy = new DeletePostPolicy();
+
+        $policy->withResponder(new DeletePostPolicyResponse())->check(null);
+        $result = $policy->check(null);
+
+        $this->assertFalse($result);
+    }
+
+    public function testPolicyClearsResponderForSubsequentChecksIfPolicyPasses()
+    {
+        $policy = new DeletePostPolicy();
+
+        $policy->withResponder(new DeletePostPolicyResponse())->check('its a post!');
+        $result = $policy->check('its a post!');
+
+        $this->assertTrue($result);
+    }
+
     public function testPolicyReturnsNullIfResponderIsSetAndPolicyPasses()
     {
         $policy = new DeletePostPolicy();

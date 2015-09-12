@@ -8,14 +8,16 @@ class Policy
 {
     private $key;
     private $error;
-    protected $policyResponse;
+    protected $policyResponder;
 
     protected function error($error)
     {
         $this->error = $error;
 
-        if ($this->policyResponse) {
-            return $this->policyResponse->checkError($this);
+        if ($this->hasPolicyResponder()) {
+            $response = $this->policyResponder->checkError($this);
+            $this->clearPolicyResponder();
+            return $response;
         }
 
         return false;
@@ -23,7 +25,8 @@ class Policy
 
     protected function success()
     {
-        if ($this->policyResponse) {
+        if ($this->hasPolicyResponder()) {
+            $this->clearPolicyResponder();
             return null;
         }
 
@@ -50,9 +53,20 @@ class Policy
         return $this->error;
     }
 
-    public function withResponder(PolicyResponse $policyResponse)
+    public function withResponder(PolicyResponse $policyResponder)
     {
-        $this->policyResponse = $policyResponse;
+        $this->policyResponder = $policyResponder;
         return $this;
     }
+
+    private function hasPolicyResponder()
+    {
+        return !is_null($this->policyResponder);
+    }
+
+    private function clearPolicyResponder()
+    {
+        $this->policyResponder = null;
+    }
+
 }
