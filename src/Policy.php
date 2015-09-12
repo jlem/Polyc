@@ -2,6 +2,8 @@
 
 namespace Jlem\Polyc;
 
+use LogicException;
+
 class Policy
 {
     private $key;
@@ -47,5 +49,14 @@ class Policy
     public function getError()
     {
         return $this->error;
+    }
+
+    public function getResponse(PolicyResponse $policyResponse)
+    {
+        if (!$this->hasError()) {
+            throw new LogicException("You must check the policy before getting a response");
+        }
+
+        return $policyResponse->checkError($this);
     }
 }
