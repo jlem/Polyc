@@ -23,14 +23,6 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
         $this->assertFalse($result);
     }
 
-    public function testPolicyCachesResultAfterChecking()
-    {
-        $policy = new DeletePostPolicy();
-        $policy->check('its a post!');
-
-        $this->assertTrue($policy->getResult());
-    }
-
     public function testPolicyCachesErrorAfterChecking()
     {
         $policy = new DeletePostPolicy();
@@ -39,21 +31,21 @@ class PolicyTest extends \PHPUnit_Framework_TestCase
         $this->assertSame($policy->getError(), $policy::INVALID_POST);
     }
 
-    public function testPolicyGetsResponse()
+    public function testPolicyReturnsResponseIfResponderIsSetAndPolicyFails()
     {
         $policy = new DeletePostPolicy();
-        $policy->check(null);
-        $response = $policy->getResponse(new DeletePostPolicyResponse());
+        $response = $policy->withResponder(new DeletePostPolicyResponse())
+                           ->check(null);
 
-        $this->assertFalse($response);
+        $this->assertEquals('this is a failure response', $response);
     }
 
-    /**
-     * @expectedException \LogicException
-     */
-    public function testPolicyRequiresCheckingBeforeGettingResponse()
+    public function testPolicyReturnsNullIfResponderIsSetAndPolicyPasses()
     {
         $policy = new DeletePostPolicy();
-        $policy->getResponse(new DeletePostPolicyResponse());
+        $response = $policy->withResponder(new DeletePostPolicyResponse())
+                           ->check('its a post!');
+
+        $this->assertNull($response);
     }
 }

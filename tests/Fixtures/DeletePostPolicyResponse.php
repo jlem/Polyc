@@ -11,7 +11,7 @@ class DeletePostPolicyResponse implements PolicyResponse
         /** @var DeletePostPolicy $policy */
         switch($policy->getError()) {
             case $policy::INVALID_POST:
-                return false;
+                return 'this is a failure response';
         }
     }
 }

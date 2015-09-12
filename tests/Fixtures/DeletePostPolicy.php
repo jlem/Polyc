@@ -10,10 +10,6 @@ class DeletePostPolicy extends Policy
 
     public function check($post)
     {
-        if ($this->hasResult()) {
-            return $this->getResult();
-        }
-
         if (is_null($post)) {
             return $this->error(self::INVALID_POST);
         }

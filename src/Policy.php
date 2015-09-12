@@ -8,17 +8,26 @@ class Policy
 {
     private $key;
     private $error;
-    private $result;
+    protected $policyResponse;
 
     protected function error($error)
     {
         $this->error = $error;
-        return $this->result = false;
+
+        if ($this->policyResponse) {
+            return $this->policyResponse->checkError($this);
+        }
+
+        return false;
     }
 
     protected function success()
     {
-        return $this->result = true;
+        if ($this->policyResponse) {
+            return null;
+        }
+
+        return true;
     }
 
     public function setKey($key)
@@ -31,16 +40,6 @@ class Policy
         return $this->key;
     }
 
-    public function hasResult()
-    {
-        return is_bool($this->getResult());
-    }
-
-    public function getResult()
-    {
-        return $this->result;
-    }
-
     public function hasError()
     {
         return !is_null($this->getError());
@@ -51,12 +50,9 @@ class Policy
         return $this->error;
     }
 
-    public function getResponse(PolicyResponse $policyResponse)
+    public function withResponder(PolicyResponse $policyResponse)
     {
-        if (!$this->hasError()) {
-            throw new LogicException("You must check the policy before getting a response");
-        }
-
-        return $policyResponse->checkError($this);
+        $this->policyResponse = $policyResponse;
+        return $this;
     }
 }
