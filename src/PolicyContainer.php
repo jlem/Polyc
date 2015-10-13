@@ -7,6 +7,10 @@ use InvalidArgumentException;
 class PolicyContainer
 {
     /**
+     * @var string
+     */
+    protected $exceptionClass;
+    /**
      * @var PolicyConfiguration
      */
     private $configuration;
@@ -25,6 +29,11 @@ class PolicyContainer
         $this->configuration = $configuration->get();
     }
 
+    public function setExceptionClass($exceptionClass)
+    {
+        $this->exceptionClass = $exceptionClass;
+    }
+
     /**
      * Creates a new policy from the configuration registry
      * @param string $key
@@ -38,6 +47,7 @@ class PolicyContainer
             /** @var Policy $policy */
             $policy = $this->policyResolver->resolve($config['handler']);
             $policy->setKey($key);
+            $policy->setDefaultExceptionClass($this->exceptionClass);
             $this->cache[$key] = $policy;
         }
 

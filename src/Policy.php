@@ -9,6 +9,7 @@ class Policy
     private $key;
     private $error;
     protected $policyResponder;
+    protected $defaultExceptionClass;
 
     protected function error($error)
     {
@@ -20,7 +21,7 @@ class Policy
             return $response;
         }
 
-        return false;
+        return new PolicyResult($this);
     }
 
     protected function success()
@@ -30,7 +31,17 @@ class Policy
             return null;
         }
 
-        return true;
+        return new PolicyResult($this);
+    }
+
+    public function setDefaultExceptionClass($defaultExceptionClass)
+    {
+        $this->defaultExceptionClass = $defaultExceptionClass;
+    }
+
+    public function getDefaultExceptionClass()
+    {
+        return $this->defaultExceptionClass;
     }
 
     public function setKey($key)
